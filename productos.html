@@ -6,15 +6,15 @@
   <link rel="stylesheet" href="styles.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;600&display=swap">
-  <link rel="stylesheet" href="styles.css" />
-      <link
+  <link
     rel="stylesheet"
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
     crossorigin="anonymous"
-    />
+  />
+  <script src="scripts.js"></script>
 </head>
 <body>
- <header>
+  <header>
     <div class="topbar">
       <div class="search-container">
         <i class="fas fa-search"></i>
@@ -27,7 +27,7 @@
         <a href="#"><i class="fab fa-twitter"></i></a>
         <a href="#"><i class="fab fa-pinterest"></i></a>
         <a href="#"><i class="fas fa-user-circle"></i></a>
-        <a href="#"><i class="fas fa-shopping-cart"></i> (0)</a>
+        <a href="carrito.html"><i class="fas fa-shopping-cart"></i> <span id="cart-count">(0)</span></a>
       </div>
     </div>
     <nav>
@@ -42,44 +42,40 @@
   </header>
 
   <section class="shop-section">
-        <aside class="filter">
-        <h3><i class="fas fa-sliders-h"></i> Filtrar por</h3>
-        <div class="divider"></div>
-
-        <div class="price-range">
-            <input type="range" min="39900" max="179900" />
-            <div class="price-labels">
-            <span>39.900 COP</span>
-            <span>179.900 COP</span>
-            </div>
+    <aside class="filter">
+      <h3><i class="fas fa-sliders-h"></i> Filtrar por</h3>
+      <div class="divider"></div>
+      <div class="price-range">
+        <input type="range" min="39900" max="179900" />
+        <div class="price-labels">
+          <span>39.900 COP</span>
+          <span>179.900 COP</span>
         </div>
+      </div>
+      <div class="divider"></div>
+    </aside>
 
-        <div class="divider"></div>
-        </aside>
     <div class="product-list">
-      <div class="product-card" onclick="openModal('Mochila cuero', 179900, 'img/mochila.jpg')">
-        <img src="img/bolsodemano.jpg" alt="Mochila cuero" />
+      <div class="product-card" onclick="openModal('Bolso de mano', 39900, 'img/bolsodemano.jpg')">
+        <img src="img/bolsodemano.jpg" alt="Bolso de mano" />
         <p>Bolso de mano</p>
         <span>$39.900,00</span>
       </div>
-    </div>
-        <div class="product-list">
-      <div class="product-card" onclick="openModal('Mochila cuero', 179900, 'img/mochila.jpg')">
-        <img src="img/mochiladecuerocafe.jpg" alt="Mochila cuero" />
-        <p>Mochila cuero Cafe</p>
+
+      <div class="product-card" onclick="openModal('Mochila cuero Café', 179900, 'img/mochiladecuerocafe.jpg')">
+        <img src="img/mochiladecuerocafe.jpg" alt="Mochila cuero café" />
+        <p>Mochila cuero Café</p>
         <span>$179.900,00</span>
       </div>
-    </div>
-        <div class="product-list">
-      <div class="product-card" onclick="openModal('Mochila cuero', 179900, 'img/mochila.jpg')">
-        <img src="img/tptebag.jpg" alt="Mochila cuero" />
+
+      <div class="product-card" onclick="openModal('Tote bag dama', 99900, 'img/tptebag.jpg')">
+        <img src="img/tptebag.jpg" alt="Tote bag dama" />
         <p>Tote bag dama</p>
         <span>$99.900,00</span>
       </div>
-    </div>
-        <div class="product-list">
-      <div class="product-card" onclick="openModal('Mochila cuero', 179900, 'img/mochila.jpg')">
-        <img src="img/mochiladecueronegra.jpg" alt="Mochila cuero" />
+
+      <div class="product-card" onclick="openModal('Mochila cuero Negra', 179900, 'img/mochiladecueronegra.jpg')">
+        <img src="img/mochiladecueronegra.jpg" alt="Mochila cuero negra" />
         <p>Mochila cuero Negra</p>
         <span>$179.900,00</span>
       </div>
@@ -99,6 +95,40 @@
     </div>
   </div>
 
-  <script src="scripts.js"></script>
+  <!-- Script -->
+  <script>
+    let cart = [];
+    let selectedProduct = {};
+
+    function openModal(nombre, precio, imagen) {
+      document.getElementById('modal-title').textContent = nombre;
+      document.getElementById('modal-price').textContent = `$${precio.toLocaleString('es-CO')},00`;
+      document.getElementById('modal-img').src = imagen;
+      document.getElementById('cantidad').value = 1;
+      selectedProduct = { nombre, precio, imagen };
+      document.getElementById('product-modal').style.display = 'block';
+    }
+
+    function closeModal() {
+      document.getElementById('product-modal').style.display = 'none';
+    }
+
+    function addToCart() {
+      const cantidad = parseInt(document.getElementById('cantidad').value);
+      cart.push({
+        ...selectedProduct,
+        cantidad
+      });
+      closeModal();
+      alert(`Agregado: ${selectedProduct.nombre} x${cantidad}`);
+      updateCartIcon();
+    }
+
+
+    // Conecta botón del modal
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelector('.modal .btn').addEventListener('click', addToCart);
+    });
+  </script>
 </body>
 </html>

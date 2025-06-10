@@ -8,3 +8,12 @@ function openModal(nombre, precio, imagen) {
 function closeModal() {
   document.getElementById('product-modal').style.display = 'none';
 }
+
+function updateCartIcon() {
+  const totalItems = cart.reduce((sum, item) => sum + item.cantidad, 0);
+  document.getElementById('cart-count').textContent = `(${totalItems})`;
+}
+
+localStorage.setItem('carrito', JSON.stringify(cart));
+
+

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Carrito - UrbanStyle Bags</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous">
+</head>
+<body>
+  <header>
+    <div class="topbar">
+      <h1 class="logo">UrbanStyle Bags</h1>
+    </div>
+    <nav>
+      <ul>
+        <li><a href="index.html">Inicio</a></li>
+        <li><a href="productos.html">Seguir comprando</a></li>
+        <li><a href="#">Contacto</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main style="padding: 40px;">
+    <h2>Carrito de compras</h2>
+    <div id="cart-container"></div>
+    <div id="total-container" style="margin-top: 20px; font-size: 1.2em;"></div>
+    <button onclick="finalizarCompra()" class="btn" style="margin-top: 20px;">Finalizar compra</button>
+  </main>
+
+  <script>
+    let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
+
+    function renderCart() {
+      const container = document.getElementById('cart-container');
+      container.innerHTML = '';
+
+      if (carrito.length === 0) {
+        container.innerHTML = '<p>Tu carrito está vacío.</p>';
+        document.getElementById('total-container').textContent = '';
+        return;
+      }
+
+      carrito.forEach((producto, index) => {
+        const item = document.createElement('div');
+        item.style.borderBottom = '1px solid #ddd';
+        item.style.padding = '10px 0';
+        item.innerHTML = `
+          <strong>${producto.nombre}</strong><br>
+          Precio: $${producto.precio.toLocaleString('es-CO')}<br>
+          Cantidad: ${producto.cantidad}<br>
+          <button onclick="eliminarProducto(${index})" class="btn" style="margin-top: 5px;">Eliminar</button>
+        `;
+        container.appendChild(item);
+      });
+
+      const total = carrito.reduce((sum, p) => sum + (p.precio * p.cantidad), 0);
+      document.getElementById('total-container').textContent = `Total: $${total.toLocaleString('es-CO')}`;
+    }
+
+    function eliminarProducto(index) {
+      carrito.splice(index, 1);
+      localStorage.setItem('carrito', JSON.stringify(carrito));
+      renderCart();
+    }
+
+    function finalizarCompra() {
+      if (carrito.length === 0) {
+        alert('Tu carrito está vacío.');
+        return;
+      }
+
+      alert('¡Gracias por tu compra!');
+      carrito = [];
+      localStorage.removeItem('carrito');
+      renderCart();
+    }
+
+    renderCart();
+  </script>
+</body>
+</html>
