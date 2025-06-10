@@ -1,81 +1,136 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Carrito - UrbanStyle Bags</title>
+  <meta charset="UTF-8" />
+  <title>Carrito de compras - UrbanStyle Bags</title>
   <link rel="stylesheet" href="styles.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous">
 </head>
 <body>
   <header>
-    <div class="topbar">
-      <h1 class="logo">UrbanStyle Bags</h1>
-    </div>
+    <h1>UrbanStyle Bags</h1>
     <nav>
-      <ul>
-        <li><a href="index.html">Inicio</a></li>
-        <li><a href="productos.html">Seguir comprando</a></li>
-        <li><a href="#">Contacto</a></li>
-      </ul>
+      <a href="index.html">Inicio</a>
+      <a href="productos.html">Seguir comprando</a>
+      <a href="#">Contacto</a>
     </nav>
   </header>
 
-  <main style="padding: 40px;">
-    <h2>Carrito de compras</h2>
-    <div id="cart-container"></div>
-    <div id="total-container" style="margin-top: 20px; font-size: 1.2em;"></div>
-    <button onclick="finalizarCompra()" class="btn" style="margin-top: 20px;">Finalizar compra</button>
+  <main class="carrito-container">
+    <section class="productos-carrito" id="productos-carrito"></section>
+
+    <aside class="resumen-pedido">
+      <h2>Resumen del pedido</h2>
+      <p>Subtotal: $<span id="subtotal">0</span></p>
+      <p>Envío: GRATIS</p>
+      <h3>Total: $<span id="total">0</span></h3>
+      <button>Finalizar compra</button>
+      <p><i class="fas fa-lock"></i> Pago seguro</p>
+    </aside>
   </main>
 
   <script>
-    let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
-
     function renderCart() {
-      const container = document.getElementById('cart-container');
-      container.innerHTML = '';
+      const contenedor = document.getElementById('productos-carrito');
+      const cart = JSON.parse(localStorage.getItem('cart')) || [];
+      contenedor.innerHTML = '';
 
-      if (carrito.length === 0) {
-        container.innerHTML = '<p>Tu carrito está vacío.</p>';
-        document.getElementById('total-container').textContent = '';
-        return;
-      }
+      let subtotal = 0;
 
-      carrito.forEach((producto, index) => {
-        const item = document.createElement('div');
-        item.style.borderBottom = '1px solid #ddd';
-        item.style.padding = '10px 0';
-        item.innerHTML = `
-          <strong>${producto.nombre}</strong><br>
-          Precio: $${producto.precio.toLocaleString('es-CO')}<br>
-          Cantidad: ${producto.cantidad}<br>
-          <button onclick="eliminarProducto(${index})" class="btn" style="margin-top: 5px;">Eliminar</button>
+      cart.forEach((producto, index) => {
+        const totalProducto = producto.price * producto.quantity;
+        subtotal += totalProducto;
+
+        const div = document.createElement('div');
+        div.className = 'producto-carrito';
+        div.innerHTML = `
+          <div class="producto-info">
+            <img src="${producto.imagen}" alt="${producto.name}" class="imagen-carrito"/>
+            <div class="detalle-producto">
+              <strong>${producto.name}</strong><br>
+              Precio: $${producto.price.toLocaleString('es-CO')}<br>
+              Cantidad: ${producto.quantity}<br>
+              <button onclick="eliminarProducto(${index})">Eliminar</button>
+            </div>
+          </div>
         `;
-        container.appendChild(item);
+        contenedor.appendChild(div);
       });
 
-      const total = carrito.reduce((sum, p) => sum + (p.precio * p.cantidad), 0);
-      document.getElementById('total-container').textContent = `Total: $${total.toLocaleString('es-CO')}`;
+      document.getElementById('subtotal').textContent = subtotal.toLocaleString('es-CO');
+      document.getElementById('total').textContent = subtotal.toLocaleString('es-CO');
     }
 
     function eliminarProducto(index) {
-      carrito.splice(index, 1);
-      localStorage.setItem('carrito', JSON.stringify(carrito));
+      const cart = JSON.parse(localStorage.getItem('cart')) || [];
+      cart.splice(index, 1);
+      localStorage.setItem('cart', JSON.stringify(cart));
       renderCart();
     }
 
-    function finalizarCompra() {
-      if (carrito.length === 0) {
-        alert('Tu carrito está vacío.');
-        return;
-      }
-
-      alert('¡Gracias por tu compra!');
-      carrito = [];
-      localStorage.removeItem('carrito');
-      renderCart();
-    }
-
-    renderCart();
+    document.addEventListener('DOMContentLoaded', renderCart);
   </script>
+
+  <style>
+    body {
+      font-family: 'Montserrat', sans-serif;
+      padding: 20px;
+    }
+
+    .carrito-container {
+      display: flex;
+      justify-content: space-between;
+      gap: 40px;
+    }
+
+    .productos-carrito {
+      flex: 2;
+    }
+
+    .producto-carrito {
+      border-bottom: 1px solid #ccc;
+      padding: 10px 0;
+    }
+
+    .producto-info {
+      display: flex;
+      gap: 15px;
+      align-items: center;
+    }
+
+    .imagen-carrito {
+      width: 100px;
+      height: auto;
+      object-fit: contain;
+      border-radius: 8px;
+    }
+
+    .detalle-producto {
+      flex: 1;
+    }
+
+    .resumen-pedido {
+      flex: 1;
+      border-left: 1px solid #ccc;
+      padding-left: 20px;
+    }
+
+    .resumen-pedido h2, .resumen-pedido h3 {
+      margin-top: 0;
+    }
+
+    button {
+      background-color: #d76c3c;
+      border: none;
+      color: white;
+      padding: 10px;
+      cursor: pointer;
+      border-radius: 5px;
+      margin-top: 10px;
+    }
+
+    button:hover {
+      background-color: #b9552d;
+    }
+  </style>
 </body>
 </html>

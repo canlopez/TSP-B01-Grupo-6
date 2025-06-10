@@ -6,12 +6,8 @@
   <link rel="stylesheet" href="styles.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;600&display=swap">
-  <link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
-    crossorigin="anonymous"
-  />
-  <script src="scripts.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
   <header>
@@ -58,25 +54,25 @@
     <div class="product-list">
       <div class="product-card" onclick="openModal('Bolso de mano', 39900, 'img/bolsodemano.jpg')">
         <img src="img/bolsodemano.jpg" alt="Bolso de mano" />
-        <p>Bolso de mano</p>
+        <p>Bolso de Mano</p>
         <span>$39.900,00</span>
       </div>
 
       <div class="product-card" onclick="openModal('Mochila cuero Café', 179900, 'img/mochiladecuerocafe.jpg')">
         <img src="img/mochiladecuerocafe.jpg" alt="Mochila cuero café" />
-        <p>Mochila cuero Café</p>
+        <p>Mochila Cuero Café</p>
         <span>$179.900,00</span>
       </div>
 
       <div class="product-card" onclick="openModal('Tote bag dama', 99900, 'img/tptebag.jpg')">
         <img src="img/tptebag.jpg" alt="Tote bag dama" />
-        <p>Tote bag dama</p>
+        <p>Tote Bag Dama</p>
         <span>$99.900,00</span>
       </div>
 
       <div class="product-card" onclick="openModal('Mochila cuero Negra', 179900, 'img/mochiladecueronegra.jpg')">
         <img src="img/mochiladecueronegra.jpg" alt="Mochila cuero negra" />
-        <p>Mochila cuero Negra</p>
+        <p>Mochila Cuero Negra</p>
         <span>$179.900,00</span>
       </div>
     </div>
@@ -86,18 +82,31 @@
   <div id="product-modal" class="modal">
     <div class="modal-content">
       <span class="close" onclick="closeModal()">&times;</span>
-      <img id="modal-img" src="" alt="Producto" />
-      <h2 id="modal-title"></h2>
-      <p id="modal-price"></p>
-      <label for="cantidad">Cantidad:</label>
-      <input type="number" id="cantidad" value="1" min="1" />
-      <button class="btn">Add to Cart</button>
+      <div class="modal-body">
+        <div class="modal-image">
+          <img id="modal-img" src="" alt="Producto" />
+        </div>
+        <div class="modal-details">
+          <h2 id="modal-title"></h2>
+          <p id="modal-price" class="modal-price"></p>
+
+          <div class="quantity-selector">
+            <label for="cantidad">Cantidad:</label>
+            <div class="quantity-controls">
+              <button onclick="changeQuantity(-1)">-</button>
+              <input type="number" id="cantidad" value="1" min="1" readonly />
+              <button onclick="changeQuantity(1)">+</button>
+            </div>
+          </div>
+
+          <button class="btn-solid" onclick="addToCart()">Add to Cart</button>
+        </div>
+      </div>
     </div>
   </div>
 
   <!-- Script -->
   <script>
-    let cart = [];
     let selectedProduct = {};
 
     function openModal(nombre, precio, imagen) {
@@ -113,21 +122,50 @@
       document.getElementById('product-modal').style.display = 'none';
     }
 
+    function changeQuantity(amount) {
+      const input = document.getElementById('cantidad');
+      let current = parseInt(input.value);
+      current = isNaN(current) ? 1 : current;
+      current += amount;
+      if (current < 1) current = 1;
+      input.value = current;
+    }
+
     function addToCart() {
       const cantidad = parseInt(document.getElementById('cantidad').value);
-      cart.push({
-        ...selectedProduct,
-        cantidad
-      });
+
+      const producto = {
+        id: selectedProduct.nombre.toLowerCase().replace(/\s/g, "_"),
+        name: selectedProduct.nombre,
+        price: selectedProduct.precio,
+        quantity: cantidad,
+        imagen: selectedProduct.imagen // <-- Agregado para mostrar imagen en carrito
+      };
+
+      let cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+      let existente = cart.find(item => item.id === producto.id);
+      if (existente) {
+        existente.quantity += cantidad;
+      } else {
+        cart.push(producto);
+      }
+
+      localStorage.setItem('cart', JSON.stringify(cart));
+
       closeModal();
-      alert(`Agregado: ${selectedProduct.nombre} x${cantidad}`);
+      alert(`Agregado: ${producto.name} x${producto.quantity}`);
       updateCartIcon();
     }
 
+    function updateCartIcon() {
+      let cart = JSON.parse(localStorage.getItem('cart')) || [];
+      const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+      document.getElementById('cart-count').textContent = `(${totalItems})`;
+    }
 
-    // Conecta botón del modal
     document.addEventListener('DOMContentLoaded', () => {
-      document.querySelector('.modal .btn').addEventListener('click', addToCart);
+      updateCartIcon();
     });
   </script>
 </body>
